@@ -1,43 +1,46 @@
-# DocureChain
-A blockchain-powered mobile app for document verification and secure identity, inspired by DigiLocker.
+# 📄 Docure: Blockchain-Based Document Verification System
 
-**"Secure Identity. Verified Nation."**
-
-A blockchain-based mobile app for document verification and identity protection, inspired by DigiLocker. It acts as a trusted digital vault and intermediary to prevent misuse of personal documents in day-to-day life.
+Docure is a decentralized document verification system designed to prevent misuse of personal documents. Inspired by India's DigiLocker, this project leverages **Blockchain**, **IPFS**, and **Flutter** to ensure secure, tamper-proof, and permanent storage and validation of documents.
 
 ---
 
-## 🧠 Problem Statement
+## 🚀 Features
 
-In everyday life, personal documents are frequently shared for verification. These documents are often misused for illegal activities. This project aims to create a blockchain-based document verification system — a mobile app that acts as a secure, government-style intermediary for identity proof.
-
----
-
-## 🚀 Goals
-
-- Prevent document misuse via blockchain-based immutability
-- Enable citizens to store and verify documents safely
-- Act as a decentralized digital locker with traceable access
+- 🔐 Blockchain-based verification (Smart Contracts on Polygon Testnet)
+- 📱 Cross-platform mobile app built with Flutter
+- 🗂️ IPFS integration for decentralized document storage
+- 🧾 Real-time document validation and history tracking
+- 👤 User login and secure document upload
+- 🌐 Admin interface for institution-level access (future scope)
 
 ---
 
-## 🛠️ Tech Stack (Planned)
+## 🛠️ Tech Stack
 
-- **Flutter** – Mobile App UI
-- **Web3dart** – Connect Flutter to Smart Contracts
-- **Solidity** – Smart Contracts for Document Registry
-- **Polygon Mumbai Testnet** – Smart contract deployment
-- **IPFS** – Store files securely off-chain
-
----
-
-## 🎨 Brand Identity
-
-- **App Name Ideas**: DocuSecure, BlockLocker, TrustVault
-- **Slogan**: "Secure Identity. Verified Nation."
-- **Logo Style**: Government-inspired, digital vault icon, tricolor theme
+| Layer | Technology |
+|-------|------------|
+| 📱 Frontend | Flutter |
+| 🔗 Smart Contracts | Solidity (Polygon Testnet) |
+| 🧊 Storage | IPFS |
+| 🔐 Wallet Integration | MetaMask / WalletConnect |
+| ☁️ Backend (optional) | Node.js / Firebase (planned) |
 
 ---
 
-## 📁 Planned Project Structure
+## 📦 Project Structure
 
+```plaintext
+/docure
+│
+├── flutter_app/              # Flutter mobile frontend
+│   ├── lib/
+│   ├── assets/
+│   └── pubspec.yaml
+│
+├── contracts/                # Smart Contracts
+│   ├── Docure.sol
+│   └── deployment/
+│
+├── ipfs/                     # IPFS interaction scripts (Node or Python)
+│
+└── README.md
