@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureDoc - Blockchain Document Verification</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f7fafc;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #e6fffa;
+        }
+
+        .document-list {
+            grid-column: 1 / -1;
+        }
+
+        .document-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .document-info {
+            flex: 1;
+        }
+
+        .document-info h3 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .document-info p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status.verified {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status.pending {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .qr-code {
+            text-align: center;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #48bb78;
+        }
+
+        .notification.error {
+            background: #f56565;
+        }
+
+        .blockchain-info {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .blockchain-info h3 {
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .document-item {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .document-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 SecureDoc</h1>
+            <p>Blockchain-Powered Document Verification System</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Document Upload Section -->
+            <div class="card">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                    </svg>
+                    Upload Document
+                </h2>
+                
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label for="documentTitle">Document Title</label>
+                        <input type="text" id="documentTitle" required placeholder="e.g., Passport, Degree Certificate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="documentType">Document Type</label>
+                        <select id="documentType" required>
+                            <option value="">Select Type</option>
+                            <option value="identity">Identity Proof</option>
+                            <option value="education">Educational Certificate</option>
+                            <option value="financial">Financial Document</option>
+                            <option value="medical">Medical Record</option>
+                            <option value="legal">Legal Document</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issuer">Issuing Authority</label>
+                        <input type="text" id="issuer" required placeholder="e.g., Government of India, University Name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="file-upload" id="fileUpload">
+                            <p>📁 Click to upload or drag & drop your document</p>
+                            <p style="font-size: 12px; margin-top: 10px; color: #718096;">Supported: PDF, JPG, PNG (Max 10MB)</p>
+                            <input type="file" id="documentFile" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="uploadBtn">
+                        🔒 Upload & Secure on Blockchain
+                    </button>
+                </form>
+            </div>
+
+            <!-- Document Verification Section -->
+            <div class="card">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                    </svg>
+                    Verify Document
+                </h2>
+                
+                <form id="verifyForm">
+                    <div class="form-group">
+                        <label for="verifyHash">Document Hash or ID</label>
+                        <input type="text" id="verifyHash" required placeholder="Enter document hash to verify">
+                    </div>
+                    
+                    <button type="submit" class="btn" id="verifyBtn">
+                        ✅ Verify Authenticity
+                    </button>
+                </form>
+                
+                <div id="verificationResult" style="margin-top: 20px; display: none;"></div>
+            </div>
+
+            <!-- Blockchain Status -->
+            <div class="card blockchain-info">
+                <h3>📊 Blockchain Network Status</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalDocs">0</div>
+                        <div>Documents Secured</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalVerifications">0</div>
+                        <div>Verifications</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="blockHeight">1</div>
+                        <div>Block Height</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="networkStatus">🟢</div>
+                        <div>Network Status</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Documents -->
+            <div class="card document-list">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M15,18V16H6V18H15M18,14V12H6V14H18Z" />
+                    </svg>
+                    My Documents
+                </h2>
+                
+                <div id="documentsList">
+                    <p style="text-align: center; color: #718096; padding: 40px;">No documents uploaded yet. Upload your first document to get started!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Share Document</h2>
+            <div id="shareContent"></div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Simulated Blockchain Implementation
+        class BlockchainDocumentSystem {
+            constructor() {
+                this.documents = this.loadDocuments();
+                this.verifications = this.loadVerifications();
+                this.blockHeight = this.documents.length + 1;
+                this.init();
+            }
+
+            init() {
+                this.updateStats();
+                this.renderDocuments();
+                this.setupEventListeners();
+            }
+
+            loadDocuments() {
+                const stored = localStorage.getItem('blockchain_documents');
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            saveDocuments() {
+                localStorage.setItem('blockchain_documents', JSON.stringify(this.documents));
+            }
+
+            loadVerifications() {
+                const stored = localStorage.getItem('blockchain_verifications');
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            saveVerifications() {
+                localStorage.setItem('blockchain_verifications', JSON.stringify(this.verifications));
+            }
+
+            generateHash(data) {
+                return CryptoJS.SHA256(JSON.stringify(data)).toString();
+            }
+
+            generateDocumentId() {
+                return 'DOC_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            uploadDocument(documentData, fileContent) {
+                try {
+                    // Create document hash
+                    const contentHash = this.generateHash(fileContent);
+                    const documentId = this.generateDocumentId();
+                    
+                    // Create blockchain entry
+                    const blockchainEntry = {
+                        id: documentId,
+                        title: documentData.title,
+                        type: documentData.type,
+                        issuer: documentData.issuer,
+                        contentHash: contentHash,
+                        timestamp: new Date().toISOString(),
+                        blockNumber: this.blockHeight,
+                        status: 'verified',
+                        owner: 'user_' + Math.random().toString(36).substr(2, 9),
+                        transactionHash: 'TX_' + this.generateHash(documentId + Date.now())
+                    };
+
+                    this.documents.push(blockchainEntry);
+                    this.blockHeight++;
+                    this.saveDocuments();
+                    this.updateStats();
+                    this.renderDocuments();
+
+                    this.showNotification('Document successfully uploaded and secured on blockchain!', 'success');
+                    return blockchainEntry;
+                } catch (error) {
+                    this.showNotification('Error uploading document: ' + error.message, 'error');
+                    throw error;
+                }
+            }
+
+            verifyDocument(hashOrId) {
+                const verification = {
+                    query: hashOrId,
+                    timestamp: new Date().toISOString(),
+                    result: null
+                };
+
+                // Find document by hash or ID
+                const document = this.documents.find(doc => 
+                    doc.contentHash === hashOrId || doc.id === hashOrId
+                );
+
+                if (document) {
+                    verification.result = {
+                        verified: true,
+                        document: document,
+                        message: 'Document is authentic and verified on blockchain'
+                    };
+                    this.showNotification('Document verification successful!', 'success');
+                } else {
+                    verification.result = {
+                        verified: false,
+                        message: 'Document not found or invalid hash/ID'
+                    };
+                    this.showNotification('Document verification failed - not found', 'error');
+                }
+
+                this.verifications.push(verification);
+                this.saveVerifications();
+                this.updateStats();
+
+                return verification.result;
+            }
+
+            shareDocument(documentId) {
+                const document = this.documents.find(doc => doc.id === documentId);
+                if (!document) return null;
+
+                // Generate secure sharing link/QR code
+                const shareData = {
+                    documentId: document.id,
+                    hash: document.contentHash,
+                    title: document.title,
+                    type: document.type,
+                    verificationUrl: `${window.location.origin}?verify=${document.id}`
+                };
+
+                return shareData;
+            }
+
+            updateStats() {
+                document.getElementById('totalDocs').textContent = this.documents.length;
+                document.getElementById('totalVerifications').textContent = this.verifications.length;
+                document.getElementById('blockHeight').textContent = this.blockHeight;
+            }
+
+            renderDocuments() {
+                const container = document.getElementById('documentsList');
+                
+                if (this.documents.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #718096; padding: 40px;">No documents uploaded yet. Upload your first document to get started!</p>';
+                    return;
+                }
+
+                container.innerHTML = this.documents.map(doc => `
+                    <div class="document-item">
+                        <div class="document-info">
+                            <h3>${doc.title}</h3>
+                            <p><strong>Type:</strong> ${doc.type} | <strong>Issuer:</strong> ${doc.issuer}</p>
+                            <p><strong>Upload Date:</strong> ${new Date(doc.timestamp).toLocaleDateString()}</p>
+                            <p><strong>Document ID:</strong> ${doc.id}</p>
+                            <p><strong>Block:</strong> #${doc.blockNumber} | <strong>Hash:</strong> ${doc.contentHash.substr(0, 16)}...</p>
+                        </div>
+                        <div class="document-actions">
+                            <span class="status verified">✅ Verified</span>
+                            <button class="btn btn-small" onclick="blockchain.showShareModal('${doc.id}')">
+                                📤 Share
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            showShareModal(documentId) {
+                const shareData = this.shareDocument(documentId);
+                if (!shareData) return;
+
+                const modal = document.getElementById('shareModal');
+                const content = document.getElementById('shareContent');
+                
+                content.innerHTML = `
+                    <div class="form-group">
+                        <label>Document ID for Verification</label>
+                        <input type="text" value="${shareData.documentId}" readonly onclick="this.select()">
+                    </div>
+                    <div class="form-group">
+                        <label>Document Hash</label>
+                        <input type="text" value="${shareData.hash}" readonly onclick="this.select()">
+                    </div>
+                    <div class="form-group">
+                        <label>Verification URL</label>
+                        <input type="text" value="${shareData.verificationUrl}" readonly onclick="this.select()">
+                    </div>
+                    <div class="qr-code">
+                        <p><strong>QR Code for Mobile Verification</strong></p>
+                        <div style="margin: 15px 0; padding: 20px; background: white; border: 2px solid #e2e8f0; border-radius: 8px;">
+                            📱 QR Code would be generated here<br>
+                            <small>(In production: Use QR code library)</small>
+                        </div>
+                        <button class="btn" onclick="this.copyToClipboard('${shareData.verificationUrl}')">
+                            📋 Copy Verification URL
+                        </button>
+                    </div>
+                `;
+
+                modal.style.display = 'flex';
+            }
+
+            copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showNotification('Copied to clipboard!', 'success');
+                });
+            }
+
+            setupEventListeners() {
+                // File upload
+                const fileUpload = document.getElementById('fileUpload');
+                const fileInput = document.getElementById('documentFile');
+
+                fileUpload.addEventListener('click', () => fileInput.click());
+                fileUpload.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    fileUpload.classList.add('dragover');
+                });
+                fileUpload.addEventListener('dragleave', () => {
+                    fileUpload.classList.remove('dragover');
+                });
+                fileUpload.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    fileUpload.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        this.handleFileSelect(files[0]);
+                    }
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleFileSelect(e.target.files[0]);
+                    }
+                });
+
+                // Form submissions
+                document.getElementById('uploadForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleUpload();
+                });
+
+                document.getElementById('verifyForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleVerification();
+                });
+
+                // Modal close
+                document.querySelector('.close').addEventListener('click', () => {
+                    document.getElementById('shareModal').style.display = 'none';
+                });
+
+                window.addEventListener('click', (e) => {
+                    const modal = document.getElementById('shareModal');
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+
+                // Check for verification query parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const verifyParam = urlParams.get('verify');
+                if (verifyParam) {
+                    document.getElementById('verifyHash').value = verifyParam;
+                    setTimeout(() => this.handleVerification(), 500);
+                }
+            }
+
+            handleFileSelect(file) {
+                if (file.size > 10 * 1024 * 1024) {
+                    this.showNotification('File size must be less than 10MB', 'error');
+                    return;
+                }
+
+                const fileUpload = document.getElementById('fileUpload');
+                fileUpload.innerHTML = `
+                    <p>✅ Selected: ${file.name}</p>
+                    <p style="font-size: 12px; margin-top: 10px; color: #718096;">Size: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                `;
+            }
+
+            async handleUpload() {
+                const title = document.getElementById('documentTitle').value;
+                const type = document.getElementById('documentType').value;
+                const issuer = document.getElementById('issuer').value;
+                const fileInput = document.getElementById('documentFile');
+
+                if (!fileInput.files.length) {
+                    this.showNotification('Please select a file to upload', 'error');
+                    return;
+                }
+
+                const uploadBtn = document.getElementById('uploadBtn');
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = '🔄 Uploading to Blockchain...';
+
+                try {
+                    const file = fileInput.files[0];
+                    const fileContent = await this.readFileAsText(file);
+                    
+                    const documentData = { title, type, issuer };
+                    const result = this.uploadDocument(documentData, fileContent);
+
+                    // Reset form
+                    document.getElementById('uploadForm').reset();
+                    document.getElementById('fileUpload').innerHTML = `
+                        <p>📁 Click to upload or drag & drop your document</p>
+                        <p style="font-size: 12px; margin-top: 10px; color: #718096;">Supported: PDF, JPG, PNG (Max 10MB)</p>
+                    `;
+
+                } catch (error) {
+                    this.showNotification('Upload failed: ' + error.message, 'error');
+                } finally {
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = '🔒 Upload & Secure on Blockchain';
+                }
+            }
+
+            readFileAsText(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsText(file);
+                });
+            }
+
+            handleVerification() {
+                const hash = document.getElementById('verifyHash').value.trim();
+                if (!hash) {
+                    this.showNotification('Please enter a document hash or ID', 'error');
+                    return;
+                }
+
+                const verifyBtn = document.getElementById('verifyBtn');
+                verifyBtn.disabled = true;
+                verifyBtn.textContent = '🔄 Verifying...';
+
+                try {
+                    const result = this.verifyDocument(hash);
+                    this.displayVerificationResult(result);
+                } finally {
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = '✅ Verify Authenticity';
+                }
+            }
+
+            displayVerificationResult(result) {
+                const container = document.getElementById('verificationResult');
+                container.style.display = 'block';
+
+                if (result.verified) {
+                    const doc = result.document;
+                    container.innerHTML = `
+                        <div style="padding: 20px; background: #c6f6d5; border-radius: 8px; border-left: 4px solid #38a169;">
+                            <h3 style="color: #22543d; margin-bottom: 15px;">✅ Document Verified</h3>
+                            <p><strong>Title:</strong> ${doc.title}</p>
+                            <p><strong>Type:</strong> ${doc.type}</p>
+                            <p><strong>Issuer:</strong> ${doc.issuer}</p>
+                            <p><strong>Upload Date:</strong> ${new Date(doc.timestamp).toLocaleString()}</p>
+                            <p><strong>Block Number:</strong> #${doc.blockNumber}</p>
+                            <p><strong>Transaction Hash:</strong> ${doc.transactionHash}</p>
+                            <p style="margin-top: 10px; font-style: italic; color: #2f855a;">${result.message}</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div style="padding: 20px; background: #fed7d7; border-radius: 8px; border-left: 4px solid #e53e3e;">
+                            <h3 style="color: #742a2a; margin-bottom: 15px;">❌ Verification Failed</h3>
+                            <p style="color: #742a2a;">${result.message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            showNotification(message, type) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 4000);
+            }
+        }
+
+        // Initialize the blockchain system
+        const blockchain = new BlockchainDocumentSystem();
+
+        // Add copy to clipboard method to window for modal use
+        window.copyToClipboard = (text) => blockchain.copyToClipboard(text);
+    </script>
+</body>
+</html>
