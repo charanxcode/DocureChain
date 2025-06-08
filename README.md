@@ -79,5 +79,3 @@ Please [open an issue](https://github.com/charanxcode/docurechain/issues) or sta
 
 ---
 
-## 📂 Project Structure
-
