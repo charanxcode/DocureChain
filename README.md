@@ -7,7 +7,7 @@ A blockchain-powered mobile app for secure document verification and digital ide
 
 ## 🚀 Overview
 
-**DocureChain** is an open-source mobile application that leverages **blockchain**, **IPFS**, and **Flutter** to provide a trusted and tamper-proof platform for document storage and verification.
+**DocureChain** is an open-source mobile application that leverages **blockchain**, **IPFS**, and **cross-platform technologies** like **Flutter** and **React Native** to provide a trusted and tamper-proof platform for document storage and verification.
 
 In today's digital age, documents are frequently shared for identity or academic verification—but they’re often vulnerable to tampering or unauthorized usage. DocureChain solves this by offering **a decentralized, user-first approach to document verification**.
 
@@ -20,19 +20,21 @@ In today's digital age, documents are frequently shared for identity or academic
 **DocureChain** aims to solve this by providing:
 - Immutable storage on **IPFS**
 - Tamper-proof document verification using **smart contracts**
-- Secure user-friendly mobile app built with **Flutter**
+- A secure, user-friendly mobile app using modern cross-platform frameworks
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer              | Tech Used                     |
-|--------------------|-------------------------------|
-| Frontend           | Flutter (Cross-platform)      |
-| Blockchain         | Solidity + Hardhat (Polygon)  |
-| Storage            | IPFS (Decentralized Storage)  |
-| Backend (optional) | Node.js or Dart               |
-| Wallet Integration | MetaMask / WalletConnect      |
+| Layer              | Tech Used                                  |
+|--------------------|---------------------------------------------|
+| Frontend           | Flutter / React Native (Cross-platform)     |
+| Blockchain         | Solidity + Hardhat (Polygon)                |
+| Storage            | IPFS (Decentralized Storage)                |
+| Backend (optional) | Node.js or Dart                             |
+| Wallet Integration | MetaMask / WalletConnect                    |
+
+> 🧪 *We are evaluating both Flutter and React Native to determine the best cross-platform framework for this solution. Community input is welcome!*
 
 ---
 
@@ -49,8 +51,9 @@ In today's digital age, documents are frequently shared for identity or academic
 ## 🧪 Project Status
 
 - [x] Project initialized on GitHub
-- [ ] Flutter UI in progress
-- [ ] Smart contract development
+- [x] Flutter UI in progress
+- [x] React Native exploration planned
+- [x] Smart contract development
 - [ ] IPFS integration module
 - [ ] End-to-end document verification flow
 - [ ] Security enhancements & optimization
@@ -61,7 +64,7 @@ In today's digital age, documents are frequently shared for identity or academic
 
 We’re actively looking for contributors in the following areas:
 
-- 🌐 **Flutter UI/UX Developers**
+- 🌐 **Flutter or React Native Developers**
 - 🔗 **Smart Contract Developers (Solidity)**
 - 🧠 **IPFS & Web3 Integrators**
 - 📝 **Documentation & Testers**
@@ -78,4 +81,3 @@ This project is still evolving, and we are actively seeking **ideas, feedback, a
 Please [open an issue](https://github.com/charanxcode/docurechain/issues) or start a discussion. We're building this together!
 
 ---
-
