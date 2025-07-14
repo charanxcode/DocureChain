@@ -51,9 +51,9 @@ In today's digital age, documents are frequently shared for identity or academic
 ## 🧪 Project Status
 
 - [x] Project initialized on GitHub
-- [x] Flutter UI in progress
-- [x] React Native exploration planned
-- [x] Smart contract development
+- [ ] Flutter UI in progress
+- [ ] React Native exploration planned
+- [ ] Smart contract development
 - [ ] IPFS integration module
 - [ ] End-to-end document verification flow
 - [ ] Security enhancements & optimization
