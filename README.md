@@ -1,7 +1,7 @@
 # 📄 DocureChain
 
 **"Secure Identity. Verified Nation."**  
-A blockchain-powered mobile app for secure document verification and digital identity protection. Inspired by DigiLocker.
+A blockchain-powered mobile app for secure document verification and digital identity protection.
 
 ---
 
