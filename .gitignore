@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Blockchain / Hardhat
+blockchain/artifacts/
+blockchain/cache/
+blockchain/typechain-types/
+
+# Turbo
+.turbo/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Coverage
+coverage/
+
+# Prisma generated client
+**/generated/client/
+
+# Native binaries
+*.dylib.node
+
+# Misc
+.antigravity/

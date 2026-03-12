@@ -1,0 +1,25 @@
+{
+    "name": "@docurechain/notification-service",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "dev": "ts-node src/index.ts",
+        "generate": "prisma generate"
+    },
+    "dependencies": {
+        "@docurechain/shared-types": "workspace:*",
+        "@prisma/client": "^5.16.1",
+        "dotenv": "^16.4.5",
+        "expo-server-sdk": "^3.10.0",
+        "ioredis": "^5.4.1",
+        "resend": "^3.4.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.14.9",
+        "prisma": "^5.16.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.5.3"
+    }
+}

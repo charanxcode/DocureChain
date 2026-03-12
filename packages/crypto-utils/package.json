@@ -1,0 +1,22 @@
+{
+    "name": "@docurechain/crypto-utils",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "jest",
+        "clean": "rm -rf dist"
+    },
+    "dependencies": {
+        "ethers": "^6.13.1"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.12",
+        "@types/node": "^20.14.9",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.5",
+        "typescript": "^5.5.3"
+    }
+}

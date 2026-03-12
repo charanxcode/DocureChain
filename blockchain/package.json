@@ -1,0 +1,21 @@
+{
+    "name": "@docurechain/blockchain",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "hardhat compile",
+        "test": "hardhat test",
+        "clean": "hardhat clean"
+    },
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+        "@openzeppelin/hardhat-upgrades": "^3.1.1",
+        "hardhat": "^2.22.5",
+        "typescript": "^5.5.3",
+        "ts-node": "^10.9.2"
+    },
+    "dependencies": {
+        "@openzeppelin/contracts": "^5.0.2",
+        "@openzeppelin/contracts-upgradeable": "^5.0.2",
+        "dotenv": "^16.4.5"
+    }
+}
